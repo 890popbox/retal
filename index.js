@@ -37,7 +37,7 @@ command.add('retal', (arg) => {
 	else if (!isNaN(arg)) delay = parseInt(arg);
     else if(arg.toLowerCase() === "off") enabled = false;
     else if(arg.toLowerCase() === "on") enabled = true;
-    command.message((enabled ? 'Enabled.' : 'Disabled.'));
+    command.message((enabled ? 'Enabled.' : 'Disabled.') + ` Delay: ${delay}ms`);
 });
 
 //this figures out what class you are.. (class retal ids are different)
