@@ -1,20 +1,5 @@
 module.exports = function retaliate(mod) {
-	const {command} = mod,
-        RETALIATE_IDs = [
-            131000, // Warrior
-            111000, // Lancer
-            101000, // Slayer
-            103000, // Berserker
-            141000, // Sorcerer
-            141000, // Archer
-            251000, // Priest
-            211000, // Mystic
-            140300, // Reaper
-            201000, // Gunner
-            121000, // Brawler
-            101000, // Ninja
-            181000 // Valkyrie
-        ];
+	const {command} = mod;
 
     let RETALIATE = {
             reserved: 0,
@@ -23,28 +8,31 @@ module.exports = function retaliate(mod) {
             huntingZoneId: 0,
             id: 0
         },
+		skillLists = [],
 		delay = 0,
-		w,
-        loc,
-        dest,
-        job,
-        templateId,
 		enabled = false;
 
 //retal toggles it.. on and off turns it on or off
 command.add('retal', (arg) => {
     if (arg === undefined) enabled = !enabled;
-	else if (!isNaN(arg)) delay = parseInt(arg);
+	else if (!isNaN(arg)) delay = ((parseInt(arg)>0) ? parseInt(arg) : 0);
     else if(arg.toLowerCase() === "off") enabled = false;
     else if(arg.toLowerCase() === "on") enabled = true;
     command.message((enabled ? 'Enabled,' : 'Disabled,') + ` Delay: ${delay}ms.`);
 });
 
 //this figures out what class you are.. (class retal ids are different)
-    mod.game.on('enter_game', () =>  {
-		templateId = mod.game.me.templateId;
-        job = (templateId - 10101) % 100;
-        RETALIATE.id = RETALIATE_IDs[job];
+    mod.game.on("enter_game", () => {
+        mod.queryData("/SkillIconData/Icon@class=?/", [mod.game.me.class], true, false, ["skillId", "iconName"]).then(res => {
+            res.forEach(icon => {
+                if(["icon_skills.risingattack_tex", "icon_skills.risingattack2_tex"].includes(icon.attributes.iconName.toLowerCase()) && skillLists.includes(icon.attributes.skillId))
+					{
+						RETALIATE.id = icon.attributes.skillId;
+						skillLists = [];
+						return;
+					}
+            });
+        });
     });
 
 //this is a function that will cast your retal skill for you, it passes in a w,loc
@@ -66,11 +54,17 @@ command.add('retal', (arg) => {
     mod.hook('S_EACH_SKILL_RESULT', 14, (event) => {
 
 //make sure that it is enabled or not.. and using right skill
-    if ((event.reaction.skill.id !== (templateId * 100) + 2) || !enabled)
+    if ((event.reaction.skill.id !== (mod.game.me.templateId * 100) + 2) || !enabled)
 		return;
 
 //cast with or without delay
 	setTimeout(retal, delay, event.reaction.w, event.reaction.loc);
 
     });
+
+//grab all skill IDs on the class you log into
+	mod.hook('S_SKILL_LIST', 2, (data) => {
+        data.skills.forEach(id => skillLists.push(parseInt(id.id)))
+    });
+
 };
