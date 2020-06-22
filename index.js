@@ -41,7 +41,6 @@ command.add('retal', (arg) => {
 					}
             });
         });
-				console.log(retal_settings);
     });
 
 //this is a function that will cast your retal skill for you, it passes in a w,loc
