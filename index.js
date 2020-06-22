@@ -1,5 +1,6 @@
 module.exports = function retaliate(mod) {
-	const {command} = mod;
+		const {command} = mod,
+			fs = require('fs');
 
     let RETALIATE = {
             reserved: 0,
@@ -9,17 +10,21 @@ module.exports = function retaliate(mod) {
             id: 0
         },
 		skillLists = [],
-		delay = 0,
-		enabled = false;
+		retal_settings = JSON.parse(fs.readFileSync(__dirname + '/config.json', 'utf8')),
+		enabled = retal_settings.enabled,
+		delay = retal_settings.delay;
 
 //retal toggles it.. on and off turns it on or off
 command.add('retal', (arg) => {
-    if (arg === undefined) enabled = !enabled;
-	  else if (!isNaN(arg)) delay = ((parseInt(arg)>0) ? parseInt(arg) : 0);
-    else if(arg.toLowerCase() === "off") enabled = false;
-    else if(arg.toLowerCase() === "on") enabled = true;
+//make sure the arg is valid, if its anything but my commands it will just fall through
+		if (arg!==undefined){
+		  if (!isNaN(arg)) delay = ((parseInt(arg)>0) ? parseInt(arg) : 0);
+	    else if(arg.toLowerCase() === "off") enabled = false;
+	    else if(arg.toLowerCase() === "on") enabled = true;
+		}
 		//write to the config file
-		mod.settings.enabled = enabled; mod.settings.delay = delay;
+		retal_settings.enabled = enabled; retal_settings.delay = delay;
+		fs.writeFileSync(__dirname + '/config.json', JSON.stringify(retal_settings));
     command.message((enabled ? 'Enabled,' : 'Disabled,') + ` Delay: ${delay}ms.`);
 });
 
@@ -36,11 +41,8 @@ command.add('retal', (arg) => {
 					}
             });
         });
-				//now check the config file
-				enabled = mod.settings.enabled;
-				delay = mod.settings.delay;
-    };
-	);
+				console.log(retal_settings);
+    });
 
 //this is a function that will cast your retal skill for you, it passes in a w,loc
     const retal = (w, loc) => {
