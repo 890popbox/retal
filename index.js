@@ -15,15 +15,18 @@ module.exports = function retaliate(mod) {
 //retal toggles it.. on and off turns it on or off
 command.add('retal', (arg) => {
     if (arg === undefined) enabled = !enabled;
-	else if (!isNaN(arg)) delay = ((parseInt(arg)>0) ? parseInt(arg) : 0);
+	  else if (!isNaN(arg)) delay = ((parseInt(arg)>0) ? parseInt(arg) : 0);
     else if(arg.toLowerCase() === "off") enabled = false;
     else if(arg.toLowerCase() === "on") enabled = true;
+		//write to the config file
+		mod.settings.enabled = enabled; mod.settings.delay = delay;
     command.message((enabled ? 'Enabled,' : 'Disabled,') + ` Delay: ${delay}ms.`);
 });
 
 //this figures out what class you are.. (class retal ids are different)
     mod.game.on("enter_game", () => {
-        mod.queryData("/SkillIconData/Icon@class=?/", [mod.game.me.class], true, false, ["skillId", "iconName"]).then(res => {
+//check all skills ids
+			mod.queryData("/SkillIconData/Icon@class=?/", [mod.game.me.class], true, false, ["skillId", "iconName"]).then(res => {
             res.forEach(icon => {
                 if(["icon_skills.risingattack_tex", "icon_skills.risingattack2_tex"].includes(icon.attributes.iconName.toLowerCase()) && skillLists.includes(icon.attributes.skillId))
 					{
@@ -33,7 +36,11 @@ command.add('retal', (arg) => {
 					}
             });
         });
-    });
+				//now check the config file
+				enabled = mod.settings.enabled;
+				delay = mod.settings.delay;
+    };
+	);
 
 //this is a function that will cast your retal skill for you, it passes in a w,loc
     const retal = (w, loc) => {
