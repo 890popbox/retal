@@ -33,9 +33,9 @@ command.add('retal', (arg) => {
 //check all skills ids
 			mod.queryData("/SkillIconData/Icon@class=?/", [mod.game.me.class], true, false, ["skillId", "iconName"]).then(res => {
             res.forEach(icon => {
-                if(["icon_skills.risingattack_tex", "icon_skills.risingattack2_tex"].includes(icon.attributes.iconName.toLowerCase()) && skillLists.includes(icon.attributes.skillId))
+                if(["icon_skills.risingattack_tex", "icon_skills.risingattack2_tex", "icon_skills.risingrocket_tex"].includes(icon.attributes.iconName.toLowerCase()) && skillLists.includes(icon.attributes.skillId))
 					{
-						RETALIATE.id = icon.attributes.skillId;
+						RETALIATE.id = Math.floor(icon.attributes.skillId/100)*100;
 						skillLists = [];
 						return;
 					}
