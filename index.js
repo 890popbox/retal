@@ -62,7 +62,7 @@ command.add('retal', (arg) => {
     mod.hook('S_EACH_SKILL_RESULT', 14, (event) => {
 
 //make sure that it is enabled or not.. and using right skill
-    if ((event.reaction.skill.id !== (mod.game.me.templateId * 100) + 2) || !enabled)
+    if (!enabled)
 		return;
 
 //cast with or without delay
