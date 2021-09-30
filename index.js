@@ -59,7 +59,7 @@ command.add('retal', (arg) => {
         );
     }
 
-    mod.hook('S_EACH_SKILL_RESULT', 14, (event) => {
+    mod.hook('S_EACH_SKILL_RESULT', 15, (event) => {
 
 //make sure that it is enabled or not.. and using right skill
     if (!enabled)
