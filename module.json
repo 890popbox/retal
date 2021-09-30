@@ -1,0 +1,9 @@
+{
+    "disableAutoUpdate": false,
+    "name": "retal",
+    "author": "MountainDewAndDoritos",
+    "description": "retal go brr",
+    "version": "1.05",
+    "servers": ["https://raw.githubusercontent.com/890popbox/retal/master/"],
+    "supportUrl": "https://github.com/890popbox/retal/issues"
+}
